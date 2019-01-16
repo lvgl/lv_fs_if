@@ -18,11 +18,11 @@
 /*********************
  *      DEFINES
  *********************/
-#ifndef LV_FS_PATH
+#ifndef LV_FS_PC_PATH
 # ifndef WIN32
-#  define LV_FS_PC_PATH "./"
+#  define LV_FS_PC_PATH "./fs_sim/"
 # else
-#  define LV_FS_PC_PATH ".\\"
+#  define LV_FS_PC_PATH ".\\fs_sim\\"
 # endif
 #endif /*LV_FS_PATH*/
 
