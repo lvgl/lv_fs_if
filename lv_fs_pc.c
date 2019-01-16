@@ -14,6 +14,9 @@
 #include <errno.h>
 #include <dirent.h>
 #include <unistd.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 /*********************
  *      DEFINES
