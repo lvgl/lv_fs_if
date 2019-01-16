@@ -71,6 +71,9 @@ static lv_fs_res_t fs_dir_close (void * dir_p);
  *   GLOBAL FUNCTIONS
  **********************/
 
+/**
+ * Register a driver for the File system interface
+ */
 void lv_fs_if_init(void)
 {
 	/*---------------------------------------------------
@@ -83,7 +86,7 @@ void lv_fs_if_init(void)
 
 	/*Set up fields...*/
 	fs_drv.file_size = sizeof(file_t);
-	fs_drv.letter = 'P';
+	fs_drv.letter = LV_FS_IF_LETTER;
 	fs_drv.open = fs_open;
 	fs_drv.close = fs_close;
 	fs_drv.read = fs_read;
@@ -425,7 +428,6 @@ static lv_fs_res_t fs_dir_close (void * dir_p)
 {
 	dir_t * dp = dir_p;
 #ifndef WIN32
-
 	closedir(*dp);
 #else
 	FindClose(*dp);

@@ -19,10 +19,10 @@
  **********************/
 
 /* Create a type to store the required data about your file.*/
-typedef  FIL sd_file_t;
+typedef  FIL file_t;
 
 /*Similarly to `file_t` create a type for directory reading too */
-typedef  DIR sd_dir_t;
+typedef  DIR dir_t;
 
 /**********************
  *  STATIC PROTOTYPES
@@ -40,9 +40,9 @@ static lv_fs_res_t fs_remove (const char *path);
 static lv_fs_res_t fs_trunc (void * file_p);
 static lv_fs_res_t fs_rename (const char * oldname, const char * newname);
 static lv_fs_res_t fs_free (uint32_t * total_p, uint32_t * free_p);
-static lv_fs_res_t fs_dir_open (void * rddir_p, const char *path);
-static lv_fs_res_t fs_dir_read (void * rddir_p, char *fn);
-static lv_fs_res_t fs_dir_close (void * rddir_p);
+static lv_fs_res_t fs_dir_open (void * dir_p, const char *path);
+static lv_fs_res_t fs_dir_read (void * dir_p, char *fn);
+static lv_fs_res_t fs_dir_close (void * dir_p);
 
 /**********************
  *  STATIC VARIABLES
@@ -73,7 +73,7 @@ void lv_fs_if_init(void)
 
     /*Set up fields...*/
     fs_drv.file_size = sizeof(file_t);
-    fs_drv.letter = 'P';
+    fs_drv.letter = LV_FS_IF_LETTER;
     fs_drv.open = fs_open;
     fs_drv.close = fs_close;
     fs_drv.read = fs_read;
@@ -101,7 +101,7 @@ void lv_fs_if_init(void)
 /* Initialize your Storage device and File system. */
 static void fs_init(void)
 {
-    /* Initalize the SD card and FatFS itself. 
+    /* Initialize the SD card and FatFS itself.
      * Better to do it in your code to keep this library utouched for easy updating*/
 }
 
@@ -119,7 +119,6 @@ static lv_fs_res_t fs_open (void * file_p, const char * path, lv_fs_mode_t mode)
     if(mode == LV_FS_MODE_WR) flags = FA_WRITE | FA_OPEN_ALWAYS;
     else if(mode == LV_FS_MODE_RD) flags = FA_READ;
     else if(mode == (LV_FS_MODE_WR | LV_FS_MODE_RD)) flags = FA_READ | FA_WRITE | FA_OPEN_ALWAYS;
-
 
     FRESULT res = f_open(file_p, fn, flags);
 
@@ -196,7 +195,7 @@ static lv_fs_res_t fs_seek (void * file_p, uint32_t pos)
  */
 static lv_fs_res_t fs_size (void * file_p, uint32_t * size_p)
 {
-	(*sz) = f_size(((sd_file_t *)file_p));
+	(*sz) = f_size(((file_t *)file_p));
     return LV_FS_RES_OK;
 }
 
@@ -209,7 +208,7 @@ static lv_fs_res_t fs_size (void * file_p, uint32_t * size_p)
  */
 static lv_fs_res_t fs_tell (void * file_p, uint32_t * pos_p)
 {
-	*pos_p = f_tell(((sd_file_t *)file_p));
+	*pos_p = f_tell(((file_t *)file_p));
     return LV_FS_RES_OK;
 }
 
@@ -273,11 +272,11 @@ static lv_fs_res_t fs_free (uint32_t * total_p, uint32_t * free_p)
 
 /**
  * Initialize a 'fs_read_dir_t' variable for directory reading
- * @param rddir_p pointer to a 'fs_read_dir_t' variable
+ * @param dir_p pointer to a 'fs_read_dir_t' variable
  * @param path path to a directory
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_open (void * rddir_p, const char *path)
+static lv_fs_res_t fs_dir_open (void * dir_p, const char *path)
 {
     FRESULT res = f_opendir(dir_p, path);
     if(res == FR_OK) return LV_FS_RES_OK;
@@ -287,11 +286,11 @@ static lv_fs_res_t fs_dir_open (void * rddir_p, const char *path)
 /**
  * Read the next filename form a directory.
  * The name of the directories will begin with '/'
- * @param rddir_p pointer to an initialized 'fs_read_dir_t' variable
+ * @param dir_p pointer to an initialized 'fs_read_dir_t' variable
  * @param fn pointer to a buffer to store the filename
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_read (void * rddir_p, char *fn)
+static lv_fs_res_t fs_dir_read (void * dir_p, char *fn)
 {
 	FRESULT res;
 	FILINFO fno;
@@ -311,10 +310,10 @@ static lv_fs_res_t fs_dir_read (void * rddir_p, char *fn)
 
 /**
  * Close the directory reading
- * @param rddir_p pointer to an initialized 'fs_read_dir_t' variable
+ * @param dir_p pointer to an initialized 'fs_read_dir_t' variable
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_close (void * rddir_p)
+static lv_fs_res_t fs_dir_close (void * dir_p)
 {
 	f_closedir(dir_p);
     return LV_FS_RES_OK;
