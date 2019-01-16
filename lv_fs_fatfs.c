@@ -8,6 +8,8 @@
  *********************/
 #include "lv_fs_if.h"
 
+#if LV_FS_IF_FATFS
+
 /*********************
  *      DEFINES
  *********************/
@@ -318,4 +320,4 @@ static lv_fs_res_t fs_dir_close (void * rddir_p)
     return LV_FS_RES_OK;
 }
 
-#endif
+#endif	/*LV_FS_IF_FATFS*/
