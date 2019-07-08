@@ -1,11 +1,11 @@
 # File System Interface
 
-LittlevGL has a [File system](https://docs.littlevgl.com/en/html/overview/file-system.html) module to attach memories which can manipulate with files. Here you find interfaces
+LittlevGL has a [File system](https://docs.littlevgl.com/en/html/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
 - FATFS
 - PC (Linux and Windows)
 file systems.
 
-You still need to provide the drivers, this repo gives "only" the bridge between FATFS/PC/etc and LittlevGL.
+You still need to provide the drivers and libraries, this repo gives "only" the bridge between FATFS/PC/etc and LittlevGL.
 
 ## Usage
 1. Add these lines to you `lv_conf.h`:
