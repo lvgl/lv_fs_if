@@ -13,8 +13,8 @@ You still need to provide the drivers, this repo gives "only" the bridge between
 /*File system interface*/
 #define LV_USE_FS_IF	1
 #if LV_USE_FS_IF
-#  define LV_FS_IF_FATFS	'\0'
-#  define LV_FS_IF_PC	 '\0'
+#  define LV_FS_IF_FATFS    '\0'
+#  define LV_FS_IF_PC       '\0'
 #endif  /*LV_USE_FS_IF*/
 ```
 
