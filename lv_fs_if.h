@@ -15,13 +15,11 @@ extern "C" {
  *********************/
 #include "lvgl/lvgl.h"
 
+#if LV_USE_FS_IF
+
 /*********************
  *      DEFINES
  *********************/
-
-#ifndef LV_FS_IF_LETTER
-# define LV_FS_IF_LETTER 'F'
-#endif
 
 /**********************
  *      TYPEDEFS
@@ -32,13 +30,15 @@ extern "C" {
  **********************/
 
 /**
- * Register a driver for the File system interface
+ * Register driver(s) for the File system interface
  */
 void lv_fs_if_init(void);
 
 /**********************
  *      MACROS
  **********************/
+
+#endif	/*LV_USE_FS_IF*/
 
 #ifdef __cplusplus
 } /* extern "C" */
