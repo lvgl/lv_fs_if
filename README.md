@@ -8,7 +8,7 @@ file systems.
 You still need to provide the drivers, this repo gives "only" the bridge between FATFS/PC/etc and LittlevGL.
 
 ## Usage
-1. Add these lines to you `lv_cong.h`:
+1. Add these lines to you `lv_conf.h`:
 ```c
 /*File system interface*/
 #define LV_USE_FS_IF	1
