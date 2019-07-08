@@ -21,8 +21,13 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
+#if LV_FS_IF_FATFS != '\0'
 void lv_fs_if_fatfs_init(void);
+#endif
+
+#if LV_FS_IF_PC != '\0'
 void lv_fs_if_pc_init(void);
+#endif
 
 /**********************
  *  STATIC VARIABLES
