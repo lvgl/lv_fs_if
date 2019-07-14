@@ -108,7 +108,7 @@ void lv_fs_if_pc_init(void)
 	fs_drv.dir_open_cb = fs_dir_open;
 	fs_drv.dir_read_cb = fs_dir_read;
 
-	lv_fs_register_drv(&fs_drv);
+	lv_fs_drv_register(&fs_drv);
 }
 
 /**********************
@@ -307,8 +307,8 @@ static lv_fs_res_t fs_trunc (lv_fs_drv_t * drv, void * file_p)
 static lv_fs_res_t fs_rename (lv_fs_drv_t * drv, const char * oldname, const char * newname)
 {
 	(void) drv;		/*Unused*/
-	char new[512];
-	char old[512];
+	static char new[512];
+	static char old[512];
 
 	sprintf(old, LV_FS_PC_PATH "/%s", oldname);
 	sprintf(new, LV_FS_PC_PATH "/%s", newname);
