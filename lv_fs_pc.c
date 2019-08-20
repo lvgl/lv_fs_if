@@ -145,7 +145,7 @@ static lv_fs_res_t fs_open (lv_fs_drv_t * drv, void * file_p, const char * path,
 #endif
 
 	file_t f = fopen(buf, flags);
-	if((long int)f <= 0) return LV_FS_RES_UNKNOWN;
+	if(f == NULL) return LV_FS_RES_UNKNOWN;
 
 	/*Be sure we are the beginning of the file*/
 	fseek(f, 0, SEEK_SET);
