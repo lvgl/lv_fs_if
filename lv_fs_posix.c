@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -236,10 +237,10 @@ static lv_fs_res_t fs_size (lv_fs_drv_t * drv, void * file_p, uint32_t * size_p)
     int * fp = file_p;
     uint32_t cur = lseek(*fp, 0, SEEK_CUR);
 
-    *size_p = lseek(file_p, 0L, SEEK_END);
+    *size_p = lseek(*fp, 0L, SEEK_END);
 
     /*Restore file pointer*/
-    lseek(file_p, cur, SEEK_SET);
+    lseek(*fp, cur, SEEK_SET);
 
     return LV_FS_RES_OK;
 }
@@ -392,44 +393,44 @@ static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *pat
  */
 static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn)
 {
-    (void) drv;     /*Unused*/
-    dir_t * dp = dir_p;        /*Just avoid the confusing casings*/
+//     (void) drv;     /*Unused*/
+//     dir_t * dp = dir_p;        /*Just avoid the confusing casings*/
 
-#ifndef WIN32
-    struct dirent *entry;
-    do {
-        entry = readdir(*dp);
+// #ifndef WIN32
+//     struct dirent *entry;
+//     do {
+//         entry = readdir(*dp);
 
-        if(entry) {
-            if(entry->d_type == DT_DIR) sprintf(fn, "/%s", entry->d_name);
-            else strcpy(fn, entry->d_name);
-        } else {
-            strcpy(fn, "");
-        }
-    } while(strcmp(fn, "/.") == 0 || strcmp(fn, "/..") == 0);
-#else
-    strcpy(fn, next_fn);
+//         if(entry) {
+//             if(entry->d_type == DT_DIR) sprintf(fn, "/%s", entry->d_name);
+//             else strcpy(fn, entry->d_name);
+//         } else {
+//             strcpy(fn, "");
+//         }
+//     } while(strcmp(fn, "/.") == 0 || strcmp(fn, "/..") == 0);
+// #else
+//     strcpy(fn, next_fn);
 
-    strcpy(next_fn, "");
-    WIN32_FIND_DATA fdata;
+//     strcpy(next_fn, "");
+//     WIN32_FIND_DATA fdata;
 
-    if(FindNextFile(*dp, &fdata) == false) return LV_FS_RES_OK;
-    do {
-        if (strcmp(fdata.cFileName, ".") == 0 || strcmp(fdata.cFileName, "..") == 0) {
-            continue;
-        } else {
+//     if(FindNextFile(*dp, &fdata) == false) return LV_FS_RES_OK;
+//     do {
+//         if (strcmp(fdata.cFileName, ".") == 0 || strcmp(fdata.cFileName, "..") == 0) {
+//             continue;
+//         } else {
 
-            if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-            {
-                sprintf(next_fn, "/%s", fdata.cFileName);
-            } else {
-                sprintf(next_fn, "%s", fdata.cFileName);
-            }
-            break;
-        }
-    } while(FindNextFile(*dp, &fdata));
+//             if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+//             {
+//                 sprintf(next_fn, "/%s", fdata.cFileName);
+//             } else {
+//                 sprintf(next_fn, "%s", fdata.cFileName);
+//             }
+//             break;
+//         }
+//     } while(FindNextFile(*dp, &fdata));
 
-#endif
+// #endif
     return LV_FS_RES_OK;
 }
 
