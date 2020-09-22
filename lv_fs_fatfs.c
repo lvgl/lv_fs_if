@@ -124,7 +124,7 @@ static void * fs_open (lv_fs_drv_t * drv, const char * path, lv_fs_mode_t mode)
 
     if(res == FR_OK) {
     	f_lseek(f, 0);
-    	return NULL;
+    	return f;
     } else {
     	return NULL;
     }
