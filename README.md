@@ -20,4 +20,4 @@ You still need to provide the drivers and libraries, this repo gives "only" the 
 
 2. Enable an interface you need by changing `'\0'` to letter you want to use for that drive. E.g. `'S'` for SD card with FATFS.
 
-3. Call `lv_fs_if_init()` to register the enabled interfaces.
+3. Call `lv_fs_if_init()` (after `lv_init()`) to register the enabled interfaces.
