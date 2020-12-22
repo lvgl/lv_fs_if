@@ -1,6 +1,6 @@
 # File System Interface
 
-LittlevGL has a [File system](https://docs.littlevgl.com/en/html/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
+LittlevGL has a [File system](https://docs.lvgl.io/latest/en/html/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
 - FATFS
 - PC (Linux and Windows)
 file systems.
