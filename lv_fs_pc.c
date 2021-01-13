@@ -109,6 +109,11 @@ void lv_fs_if_pc_init(void)
 	fs_drv.dir_read_cb = fs_dir_read;
 
 	lv_fs_drv_register(&fs_drv);
+
+	char cur_path[512];
+	getcwd(cur_path, sizeof(cur_path));
+	LV_LOG_USER("LV_FS_PC is initialized with.");
+	LV_LOG_USER("The following path is considered as root directory:\n%s", cur_path);
 }
 
 /**********************
