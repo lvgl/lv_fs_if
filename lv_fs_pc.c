@@ -34,16 +34,6 @@
  *      TYPEDEFS
  **********************/
 
-/* Create a type to store the required data about your file. */
-
-/*Similarly to `file_t` create a type for directory reading too */
-#ifndef  WIN32
-typedef  DIR * dir_t;
-#else
-typedef HANDLE dir_t;
-#endif
-
-
 /**********************
  *  STATIC PROTOTYPES
  **********************/
@@ -58,7 +48,7 @@ static lv_fs_res_t fs_remove (lv_fs_drv_t * drv, const char *path);
 static lv_fs_res_t fs_trunc (lv_fs_drv_t * drv, void * file_p);
 static lv_fs_res_t fs_rename (lv_fs_drv_t * drv, const char * oldname, const char * newname);
 static lv_fs_res_t fs_free (lv_fs_drv_t * drv, uint32_t * total_p, uint32_t * free_p);
-static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *path);
+static void * fs_dir_open (lv_fs_drv_t * drv, const char *path);
 static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn);
 static lv_fs_res_t fs_dir_close (lv_fs_drv_t * drv, void * dir_p);
 
@@ -101,7 +91,6 @@ void lv_fs_if_pc_init(void)
 	fs_drv.rename_cb = fs_rename;
 	fs_drv.trunc_cb = fs_trunc;
 
-	fs_drv.rddir_size = sizeof(dir_t);
 	fs_drv.dir_close_cb = fs_dir_close;
 	fs_drv.dir_open_cb = fs_dir_open;
 	fs_drv.dir_read_cb = fs_dir_read;
@@ -335,24 +324,16 @@ static char next_fn[256];
  * @param path path to a directory
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *path)
+static void * fs_dir_open (lv_fs_drv_t * drv, const char *path)
 {
 	(void) drv;		/*Unused*/
-	dir_t d;
 #ifndef WIN32
 	/*Make the path relative to the current directory (the projects root folder)*/
 	char buf[256];
 	sprintf(buf, LV_FS_PC_PATH "/%s", path);
-	if ((d = opendir(buf)) == NULL) {
-		return LV_FS_RES_FS_ERR;
-	} else {
-		/* 'dir_p' is pointer to a file descriptor and
-		 * we need to store our file descriptor here*/
-		dir_t * dp = dir_p;        /*Just avoid the confusing casings*/
-		*dp = d;
-	}
+	return opendir(buf);
 #else
-	d = INVALID_HANDLE_VALUE;
+	HANDLE d = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA fdata;
 
 	/*Make the path relative to the current directory (the projects root folder)*/
@@ -376,12 +357,8 @@ static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *pat
 		}
 	} while(FindNextFileA(d, &fdata));
 
-	dir_t * dp = dir_p;        /*Just avoid the confusing casings*/
-	*dp = d;
-
+	return d;
 #endif
-
-	return LV_FS_RES_OK;
 }
 
 /**
@@ -395,12 +372,11 @@ static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *pat
 static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn)
 {
 	(void) drv;		/*Unused*/
-	dir_t * dp = dir_p;        /*Just avoid the confusing casings*/
 
 #ifndef WIN32
 	struct dirent *entry;
 	do {
-		entry = readdir(*dp);
+		entry = readdir(dir_p);
 
 		if(entry) {
 			if(entry->d_type == DT_DIR) sprintf(fn, "/%s", entry->d_name);
@@ -415,7 +391,7 @@ static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn)
 	strcpy(next_fn, "");
 	WIN32_FIND_DATA fdata;
 
-	if(FindNextFile(*dp, &fdata) == false) return LV_FS_RES_OK;
+	if(FindNextFile(dir_p, &fdata) == false) return LV_FS_RES_OK;
 	do {
 		if (strcmp(fdata.cFileName, ".") == 0 || strcmp(fdata.cFileName, "..") == 0) {
 			continue;
@@ -429,7 +405,7 @@ static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn)
 			}
 			break;
 		}
-	} while(FindNextFile(*dp, &fdata));
+	} while(FindNextFile(dir_p, &fdata));
 
 #endif
 	return LV_FS_RES_OK;
@@ -444,12 +420,10 @@ static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn)
 static lv_fs_res_t fs_dir_close (lv_fs_drv_t * drv, void * dir_p)
 {
 	(void) drv;		/*Unused*/
-	dir_t * dp = dir_p;
 #ifndef WIN32
-	closedir(*dp);
+	closedir(dir_p);
 #else
-	FindClose(*dp);
-	*dp = INVALID_HANDLE_VALUE;
+	FindClose(dir_p);
 #endif
 	return LV_FS_RES_OK;
 }

@@ -19,7 +19,6 @@
 /**********************
  *      TYPEDEFS
  **********************/
-typedef DIR dir_t;
 
 /**********************
  *  STATIC PROTOTYPES
@@ -37,7 +36,7 @@ static lv_fs_res_t fs_remove (lv_fs_drv_t * drv, const char *path);
 static lv_fs_res_t fs_trunc (lv_fs_drv_t * drv, void * file_p);
 static lv_fs_res_t fs_rename (lv_fs_drv_t * drv, const char * oldname, const char * newname);
 static lv_fs_res_t fs_free (lv_fs_drv_t * drv, uint32_t * total_p, uint32_t * free_p);
-static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *path);
+static void * fs_dir_open (lv_fs_drv_t * drv, const char *path);
 static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn);
 static lv_fs_res_t fs_dir_close (lv_fs_drv_t * drv, void * dir_p);
 
@@ -82,7 +81,6 @@ void lv_fs_if_fatfs_init(void)
     fs_drv.rename_cb = fs_rename;
     fs_drv.trunc_cb = fs_trunc;
 
-    fs_drv.rddir_size = sizeof(dir_t);
     fs_drv.dir_close_cb = fs_dir_close;
     fs_drv.dir_open_cb = fs_dir_open;
     fs_drv.dir_read_cb = fs_dir_read;
@@ -289,11 +287,17 @@ static lv_fs_res_t fs_free (lv_fs_drv_t * drv, uint32_t * total_p, uint32_t * fr
  * @param path path to a directory
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_open (lv_fs_drv_t * drv, void * dir_p, const char *path)
+static void * fs_dir_open (lv_fs_drv_t * drv, const char *path)
 {
-    FRESULT res = f_opendir(dir_p, path);
-    if(res == FR_OK) return LV_FS_RES_OK;
-    else return LV_FS_RES_UNKNOWN;
+    DIR * d = lv_mem_alloc(sizeof(DIR));
+    if(d == NULL) return NULL;
+
+    FRESULT res = f_opendir(d, path);
+    if(res !== FR_OK) {
+        lv_mem_free(d);
+        d = NULL;
+    }
+    return d;
 }
 
 /**
