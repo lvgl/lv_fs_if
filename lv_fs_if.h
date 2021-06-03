@@ -13,7 +13,11 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "lvgl/lvgl.h"
+#if LV_LVGL_H_INCLUDE_SIMPLE
+#include <lvgl.h>
+#else
+#include <lvgl/lvgl.h>
+#endif
 
 #if LV_USE_FS_IF
 
