@@ -43,12 +43,7 @@ static lv_fs_res_t fs_close (lv_fs_drv_t * drv, void * file_p);
 static lv_fs_res_t fs_read (lv_fs_drv_t * drv, void * file_p, void * buf, uint32_t btr, uint32_t * br);
 static lv_fs_res_t fs_write(lv_fs_drv_t * drv, void * file_p, const void * buf, uint32_t btw, uint32_t * bw);
 static lv_fs_res_t fs_seek (lv_fs_drv_t * drv, void * file_p, uint32_t pos, lv_fs_whence_t whence);
-static lv_fs_res_t fs_size (lv_fs_drv_t * drv, void * file_p, uint32_t * size_p);
 static lv_fs_res_t fs_tell (lv_fs_drv_t * drv, void * file_p, uint32_t * pos_p);
-static lv_fs_res_t fs_remove (lv_fs_drv_t * drv, const char *path);
-static lv_fs_res_t fs_trunc (lv_fs_drv_t * drv, void * file_p);
-static lv_fs_res_t fs_rename (lv_fs_drv_t * drv, const char * oldname, const char * newname);
-static lv_fs_res_t fs_free (lv_fs_drv_t * drv, uint32_t * total_p, uint32_t * free_p);
 static void * fs_dir_open (lv_fs_drv_t * drv, const char *path);
 static lv_fs_res_t fs_dir_read (lv_fs_drv_t * drv, void * dir_p, char *fn);
 static lv_fs_res_t fs_dir_close (lv_fs_drv_t * drv, void * dir_p);
@@ -75,7 +70,7 @@ void lv_fs_if_posix_init(void)
      *--------------------------------------------------*/
 
     /* Add a simple drive to open images */
-    lv_fs_drv_t fs_drv;                         /*A driver descriptor*/
+    static lv_fs_drv_t fs_drv;                         /*A driver descriptor*/
     lv_fs_drv_init(&fs_drv);
 
     /*Set up fields...*/
@@ -86,11 +81,6 @@ void lv_fs_if_posix_init(void)
     fs_drv.write_cb = fs_write;
     fs_drv.seek_cb = fs_seek;
     fs_drv.tell_cb = fs_tell;
-    fs_drv.free_space_cb = fs_free;
-    fs_drv.size_cb = fs_size;
-    fs_drv.remove_cb = fs_remove;
-    fs_drv.rename_cb = fs_rename;
-    fs_drv.trunc_cb = fs_trunc;
 
     fs_drv.dir_close_cb = fs_dir_close;
     fs_drv.dir_open_cb = fs_dir_open;
@@ -213,27 +203,6 @@ static lv_fs_res_t fs_seek (lv_fs_drv_t * drv, void * file_p, uint32_t pos, lv_f
 }
 
 /**
- * Give the size of a file bytes
- * @param drv pointer to a driver where this function belongs
- * @param file_p pointer to a file_t variable
- * @param size pointer to a variable to store the size
- * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
- */
-static lv_fs_res_t fs_size (lv_fs_drv_t * drv, void * file_p, uint32_t * size_p)
-{
-    (void) drv;     /*Unused*/
-
-    int * fp = file_p;
-    uint32_t cur = lseek(*fp, 0, SEEK_CUR);
-
-    *size_p = lseek(*fp, 0L, SEEK_END);
-
-    /*Restore file pointer*/
-    lseek(*fp, cur, SEEK_SET);
-
-    return LV_FS_RES_OK;
-}
-/**
  * Give the position of the read write pointer
  * @param drv pointer to a driver where this function belongs
  * @param file_p pointer to a file_t variable.
@@ -247,68 +216,6 @@ static lv_fs_res_t fs_tell (lv_fs_drv_t * drv, void * file_p, uint32_t * pos_p)
     int * fp = file_p;
     *pos_p = lseek(*fp, 0, SEEK_CUR);
     return LV_FS_RES_OK;
-}
-
-/**
- * Delete a file
- * @param drv pointer to a driver where this function belongs
- * @param path path of the file to delete
- * @return  LV_FS_RES_OK or any error from lv_fs_res_t enum
- */
-static lv_fs_res_t fs_remove (lv_fs_drv_t * drv, const char *path)
-{
-    (void) drv;     /*Unused*/
-    lv_fs_res_t res = LV_FS_RES_NOT_IMP;
-
-    /* Add your code here*/
-
-    return res;
-}
-
-/**
- * Truncate the file size to the current position of the read write pointer
- * @param drv pointer to a driver where this function belongs
- * @param file_p pointer to an 'ufs_file_t' variable. (opened with lv_fs_open )
- * @return LV_FS_RES_OK: no error, the file is read
- *         any error from lv_fs_res_t enum
- */
-static lv_fs_res_t fs_trunc (lv_fs_drv_t * drv, void * file_p)
-{
-    (void) drv;     /*Unused*/
-    return LV_FS_RES_NOT_IMP;
-
-}
-
-/**
- * Rename a file
- * @param drv pointer to a driver where this function belongs
- * @param oldname path to the file
- * @param newname path with the new name
- * @return LV_FS_RES_OK or any error from 'fs_res_t'
- */
-static lv_fs_res_t fs_rename (lv_fs_drv_t * drv, const char * oldname, const char * newname)
-{
-    (void) drv;     /*Unused*/
-
-    return LV_FS_RES_NOT_IMP;
-}
-
-/**
- * Get the free and total size of a driver in kB
- * @param drv pointer to a driver where this function belongs
- * @param letter the driver letter
- * @param total_p pointer to store the total size [kB]
- * @param free_p pointer to store the free size [kB]
- * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
- */
-static lv_fs_res_t fs_free (lv_fs_drv_t * drv, uint32_t * total_p, uint32_t * free_p)
-{
-    (void) drv;     /*Unused*/
-    lv_fs_res_t res = LV_FS_RES_NOT_IMP;
-
-    /* Add your code here*/
-
-    return res;
 }
 
 
@@ -326,7 +233,6 @@ static char next_fn[256];
 static void * fs_dir_open (lv_fs_drv_t * drv, const char *path)
 {
     (void) drv;     /*Unused*/
-    dir_t d;
 #ifndef WIN32
     /*Make the path relative to the current directory (the projects root folder)*/
     char buf[256];
