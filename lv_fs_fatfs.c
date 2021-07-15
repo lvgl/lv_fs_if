@@ -208,7 +208,7 @@ static void * fs_dir_open (lv_fs_drv_t * drv, const char *path)
     if(d == NULL) return NULL;
 
     FRESULT res = f_opendir(d, path);
-    if(res !== FR_OK) {
+    if(res != FR_OK) {
         lv_mem_free(d);
         d = NULL;
     }
