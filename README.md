@@ -1,6 +1,6 @@
 # File System Interface
 
-LVGL has a [File system](https://docs.lvgl.io/v8/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
+LVGL has a [File system](https://docs.lvgl.io/master/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
 
 - FATFS
 - PC (Linux and Windows using C standard function .e.g fopen, fread)
