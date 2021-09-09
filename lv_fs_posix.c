@@ -112,14 +112,9 @@ static void * fs_open (lv_fs_drv_t * drv, const char * path, lv_fs_mode_t mode)
     else if(mode == (LV_FS_MODE_WR | LV_FS_MODE_RD)) flags = O_RDWR;
 
     /*Make the path relative to the current directory (the projects root folder)*/
+    char buf[256];
+    sprintf(buf, LV_FS_POSIX_PATH "%s", path);
 
-#ifndef WIN32
-    char buf[256];
-    sprintf(buf, LV_FS_POSIX_PATH "%s", path);
-#else
-    char buf[256];
-    sprintf(buf, LV_FS_POSIX_PATH "%s", path);
-#endif
 
     int f = open(buf, flags);
     if(f < 0) return NULL;
