@@ -1,5 +1,7 @@
 # File System Interface
 
+**This repository is merged into the lvgl repository. See https://docs.lvgl.io/master/libs/fs.html**
+
 LVGL has a [File system](https://docs.lvgl.io/master/overview/file-system.html) module to attach memories which can manipulate with files. Here you can find interfaces to
 
 - FATFS
